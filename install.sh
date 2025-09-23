@@ -1,31 +1,31 @@
 #!/bin/bash
 
-# Update & install tools
+# ===== UPDATE & INSTALL TOOLS =====
 apt update -y
 apt upgrade -y
-apt install lolcat figlet neofetch screenfetch unzip -y
+apt install lolcat figlet neofetch screenfetch unzip wget -y
 
-# Siapkan folder UDP
+# ===== SIAPKAN FOLDER UDP =====
 cd
 rm -rf /root/udp
 mkdir -p /root/udp
 
-# Set timezone Asia/Jakarta (GMT+7)
+# ===== SET TIMEZONE =====
 echo "Changing timezone to Asia/Jakarta"
 ln -fs /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
 dpkg-reconfigure -f noninteractive tzdata
 
-# Install udp-custom
+# ===== INSTALL UDP-CUSTOM =====
 echo "Downloading udp-custom..."
-wget "https://github.com/scriswan/udp/raw/main/udp-custom-linux-amd64" -O /root/udp/udp-custom
+wget -q "https://github.com/scriswan/udp/raw/main/udp-custom-linux-amd64" -O /root/udp/udp-custom
 chmod +x /root/udp/udp-custom
 
-# Download default config
+# ===== DOWNLOAD DEFAULT CONFIG =====
 echo "Downloading default config..."
-wget "https://raw.githubusercontent.com/scriswan/udp/main/config.json" -O /root/udp/config.json
+wget -q "https://raw.githubusercontent.com/scriswan/udp/main/config.json" -O /root/udp/config.json
 chmod 644 /root/udp/config.json
 
-# Buat systemd service
+# ===== BUAT SYSTEMD SERVICE =====
 if [ -z "$1" ]; then
 cat <<EOF > /etc/systemd/system/udp-custom.service
 [Unit]
@@ -60,16 +60,15 @@ WantedBy=default.target
 EOF
 fi
 
-# Install menu dan script tambahan
+# ===== INSTALL MENU & SCRIPT TAMBAHAN =====
 echo "Installing additional scripts..."
-cd $HOME
 mkdir -p /etc/Sslablk
 cd /etc/Sslablk
-wget https://github.com/scriswan/udp/raw/main/system.zip
-unzip system.zip
+wget -q https://github.com/scriswan/udp/raw/main/system.zip
+unzip -o -q system.zip   # otomatis ekstrak tanpa menekan Y
 cd /etc/Sslablk/system
 
-# Pindahkan menu
+# Pindahkan menu ke /usr/local/bin
 mv menu /usr/local/bin
 chmod +x /usr/local/bin/menu
 
@@ -80,17 +79,17 @@ chmod +x ChangeUser.sh Adduser.sh DelUser.sh Userlist.sh RemoveScript.sh torrent
 cd /etc/Sslablk
 rm system.zip
 
-# Start & enable service
+# ===== START & ENABLE SERVICE =====
 echo "Starting UDP service..."
 systemctl daemon-reload
 systemctl enable --now udp-custom
 
-# Setup menu agar tampil otomatis saat login root
+# ===== SETUP MENU AUTO-RUN =====
 echo "Setting up menu auto-run..."
 if ! grep -q "/usr/local/bin/menu" /root/.bashrc; then
     echo "/usr/local/bin/menu" >> /root/.bashrc
 fi
 
-# Selesai tanpa reboot
+# ===== SELESAI =====
 echo "Installation complete. Launching menu..."
-menu
+/usr/local/bin/menu
