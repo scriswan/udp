@@ -1,4 +1,8 @@
 ## Apt Update
+## 
+``bsh
+apt update && apt install curl -y
+```
 
 ```bsh
 apt-get update && apt-get install wget -y
