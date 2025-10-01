@@ -1,6 +1,6 @@
 ## Apt Update
 ## 
-``bsh
+```bsh
 apt update && apt install curl -y
 ```
 
